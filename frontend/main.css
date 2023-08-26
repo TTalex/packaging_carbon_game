@@ -7,3 +7,12 @@
 .section {
   flex: 1;
 }
+.card {
+  display:flex;
+  flex-direction: column;
+}
+.card-btn-footer {
+  margin-top: auto;
+  padding-left: 1.5rem;
+  padding-bottom: 1.5rem;
+}

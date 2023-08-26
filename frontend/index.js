@@ -2,8 +2,14 @@ const Product = (props) => {
     if(!props.product) {
         return (<div></div>)
     }
+    let quantity_unit = ""
+    if (props.product.quantity && props.product.quantity.toLowerCase().indexOf("g") > -1) {
+        quantity_unit = "g"
+    } else if (props.product.quantity && props.product.quantity.toLowerCase().indexOf("l") > -1) {
+        quantity_unit = "ml"
+    }
     return (
-        <div className="card">
+        <div className="card" style={{height: "100%"}}>
             <div className="card-image">
                 <figure style={{textAlign: "center"}}>
                     <img src={props.product.image_url} alt={props.product.product_name} style={{height: "200px"}} />
@@ -13,17 +19,33 @@ const Product = (props) => {
                 <div className="media">
                     <div className="media-content">
                         <p className="title">{props.product.product_name}</p>
-                        {!props.showResult && <button className="button is-primary" onClick={props.onClick}>Celui-ci est à privilégier</button>}
                         {props.showResult && <div>
-                            <p className="subtitle">{Math.round(props.product.gCO2e)} gCO2e</p>
-                            <div>Matières:</div>
-                            <div className="tags">
-                                {props.product.materials.split(",").map(material => <span className="tag">{material}</span>)}
-                            </div>
-                            <p style={{marginTop: "10px"}}><a target="_blank" href={`https://fr.openfoodfacts.org/produit/${props.product.code}`}>{`https://fr.openfoodfacts.org/produit/${props.product.code}`}</a></p>
+                            <p className="subtitle">
+                                {props.use_per_100 ? props.product.gCO2e_per_100.toFixed(2)  + " gCO2e/100" + quantity_unit + " | " : ""}
+                                {props.product.gCO2e_total.toFixed(2)} gCO2e total
+                            </p>
                         </div>}
+                        <div style={{marginTop: "10px"}}>Matières:</div>
+                        <div className="tags">
+                            {props.product.materials.split(",").map(material => <span className="tag">
+                                {props.showResult ? material : material.split(":")[0]+":"+material.split(":")[1]}
+                            </span>)}
+                        </div>
+                        
+                        <div>Quantité de produit:</div>
+                        <div className="tags">
+                            <span className="tag">{props.product.quantity ? props.product.quantity : "inconnue"}</span>
+                        </div>
+                        
                     </div>
                 </div>
+            </div>
+            
+            <div className="card-btn-footer">
+                {props.showResult
+                ? <p style={{marginTop: "10px"}}><a target="_blank" href={`https://fr.openfoodfacts.org/produit/${props.product.code}`}>{`https://fr.openfoodfacts.org/produit/${props.product.code}`}</a></p>
+                : <button className="button is-primary" onClick={props.onClick}>Celui-ci est à privilégier ({props.use_per_100 ? "en gCO2e/100" + quantity_unit : "en gCO2e totaux"})</button>
+                }
             </div>
         </div>
     )
@@ -47,13 +69,15 @@ const App = () => {
     }
     const handleClick = (product) => {
         setShowResult(true)
+        const product1_gCO2e = data.use_per_100 ? data.product1.gCO2e_per_100 : data.product1.gCO2e_total
+        const product2_gCO2e = data.use_per_100 ? data.product2.gCO2e_per_100 : data.product2.gCO2e_total
         let correctProduct
-        if (data.product1.gCO2e === data.product2.gCO2e) {
+        if (product1_gCO2e === product2_gCO2e) {
             setCorrectProduct(data.product1)
             setShowSuccessNotif(true)
             return
         }
-        if (data.product1.gCO2e < data.product2.gCO2e) {
+        if (product1_gCO2e < product2_gCO2e) {
             correctProduct = data.product1
         } else {
             correctProduct = data.product2
@@ -79,6 +103,9 @@ const App = () => {
                     <h1 className="title">
                         Devinez quel emballage privilégier
                     </h1>
+                    {data.error && <div className="notification is-danger">
+                        Un problème est survenu, tentez de rafraichir la page. <br/> Erreur: {data.error}
+                    </div>}
                     {showErrorNotif && <div className="notification is-danger" onClick={e => replay()} style={{cursor: "pointer"}}>
                         Raté, la bonne réponse était {correctProduct.product_name}, cliquez sur ce bandeau pour rejouer.
                     </div>}
@@ -88,10 +115,10 @@ const App = () => {
                     <div className="columns">
                         <div className="column"></div>
                         <div className="column is-4">
-                            <Product product={data.product1} onClick={e => handleClick(data.product1)} showResult={showResult}></Product>
+                            <Product product={data.product1} onClick={e => handleClick(data.product1)} showResult={showResult} use_per_100={data.use_per_100}></Product>
                         </div>
                         <div className="column is-4">
-                            <Product product={data.product2} onClick={e => handleClick(data.product2)} showResult={showResult}></Product>
+                            <Product product={data.product2} onClick={e => handleClick(data.product2)} showResult={showResult} use_per_100={data.use_per_100}></Product>
                         </div>
                         <div className="column"></div>
                     </div>

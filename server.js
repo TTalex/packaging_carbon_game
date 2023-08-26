@@ -37,7 +37,7 @@ function fetchRandomEntry(category) {
 
 function fetchProductByCode(code) {
     return new Promise(resolve => {
-        db.get("select code, max(sum(weight_specified*KgCo2ePerKg), sum(weight_measured*KgCo2ePerKg)) as gCO2e, group_concat(material) as materials from 'packagings-with-weights' left join materials on material = name where code = ?", code, (err, data) => {
+        db.get("select code, max(sum(weight_specified*KgCo2ePerKg), sum(weight_measured*KgCo2ePerKg)) as gCO2e_total, group_concat(material||':'||weight_specified||weight_measured||'g') as materials from 'packagings-with-weights' left join materials on material = name where code = ?", code, (err, data) => {
             resolve(data)
         })
     })
@@ -45,15 +45,15 @@ function fetchProductByCode(code) {
 
 function fetchAdditionalProductInfoByCode(code) {
     return new Promise(resolve => {
-        db.get("select code, image_url, product_name from apicache where code = ?", [code], (err, data) => {
+        db.get("select code, image_url, product_name, product_quantity, quantity from apicache where code = ?", [code], (err, data) => {
             if(data) {
                 resolve(data)
             } else {
-                fetch(`https://fr.openfoodfacts.org/api/v2/product/${code}&fields=image_url,product_name,abbreviated_product_name`)
+                fetch(`https://fr.openfoodfacts.org/api/v2/product/${code}&fields=image_url,product_name,abbreviated_product_name,product_quantity,quantity`)
                 .then(res => res.json())
                 .then(res => {
                     const product_name = res.product.product_name || res.product.abbreviated_product_name
-                    db.run("INSERT INTO apicache VALUES (?, ?, ?)", [code, res.product.image_url, product_name], err => {
+                    db.run("INSERT INTO apicache VALUES (?, ?, ?, ?, ?)", [code, res.product.image_url, product_name, res.product.product_quantity, res.product.quantity], err => {
                         if (err) {
                             console.log("Insert error", err)
                         }
@@ -61,7 +61,9 @@ function fetchAdditionalProductInfoByCode(code) {
                     resolve({
                         code: code,
                         image_url: res.product.image_url,
-                        product_name: product_name
+                        product_name: product_name,
+                        product_quantity: res.product.product_quantity,
+                        quantity: res.product.quantity
                     })
                 })
             }
@@ -74,6 +76,13 @@ async function fetchRandomProductData(category) {
     const additionalData = await fetchAdditionalProductInfoByCode(code.code)
     product.image_url = additionalData.image_url
     product.product_name = additionalData.product_name
+    product.product_quantity = additionalData.product_quantity
+    product.quantity = additionalData.quantity
+    if (product.product_quantity) {
+        product.gCO2e_per_100 = product.gCO2e_total * 100 / product.product_quantity
+    } else {
+        product.gCO2e_per_100 = null
+    }
     return product
 }
 app.use(cors())
@@ -92,14 +101,21 @@ app.post('/api/storeScore', async (req, res) => {
     })
 })
 
-app.get('/api/fetchTwo', async (req, res) => {    
-    const category = getRandomCategory()
-    const product1 = await fetchRandomProductData(category)
-    const product2 = await fetchRandomProductData(category)
-    res.json({
-        product1: product1,
-        product2: product2
-    })
+app.get('/api/fetchTwo', async (req, res) => {
+    try {
+        const category = getRandomCategory()
+        const product1 = await fetchRandomProductData(category)
+        const product2 = await fetchRandomProductData(category)
+        const use_per_100 = product1.gCO2e_per_100 != null && product2.gCO2e_per_100 != null
+        res.json({
+            product1: product1,
+            product2: product2,
+            use_per_100: use_per_100
+        })
+    } catch(e) {
+        // Lazy man error handling (happens when db is busy for example)
+        res.status(500).json({error: e.toString()})
+    }
 })
 
 if (privateKeyFile) {
