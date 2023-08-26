@@ -1,4 +1,3 @@
-
 const Product = (props) => {
     if(!props.product) {
         return (<div></div>)
@@ -14,7 +13,7 @@ const Product = (props) => {
                 <div className="media">
                     <div className="media-content">
                         <p className="title">{props.product.product_name}</p>
-                        {!props.showResult && <button className="button is-primary" onClick={props.onClick}>Celui-ci est le pire</button>}
+                        {!props.showResult && <button className="button is-primary" onClick={props.onClick}>Celui-ci est à privilégier</button>}
                         {props.showResult && <div>
                             <p className="subtitle">{Math.round(props.product.gCO2e)} gCO2e</p>
                             <div>Matières:</div>
@@ -54,7 +53,7 @@ const App = () => {
             setShowSuccessNotif(true)
             return
         }
-        if (data.product1.gCO2e > data.product2.gCO2e) {
+        if (data.product1.gCO2e < data.product2.gCO2e) {
             correctProduct = data.product1
         } else {
             correctProduct = data.product2
@@ -78,7 +77,7 @@ const App = () => {
             <section className="section">
                 <div className="container">
                     <h1 className="title">
-                        Devinez quel emballage a le pire impact carbone
+                        Devinez quel emballage privilégier
                     </h1>
                     {showErrorNotif && <div className="notification is-danger" onClick={e => replay()} style={{cursor: "pointer"}}>
                         Raté, la bonne réponse était {correctProduct.product_name}, cliquez sur ce bandeau pour rejouer.
@@ -95,7 +94,7 @@ const App = () => {
                             <Product product={data.product2} onClick={e => handleClick(data.product2)} showResult={showResult}></Product>
                         </div>
                         <div className="column"></div>
-                    </div>                    
+                    </div>
                 </div>
             </section>
             <section className="section">
@@ -104,7 +103,7 @@ const App = () => {
                         Quelques notes
                     </h2>
                     <p>
-                        Si une partie du contenu ne charge pas, les serveurs d'Open Food Facts sont probablement saturés, retentez plus tard. 
+                        Si une partie du contenu ne charge pas, les serveurs d'Open Food Facts sont probablement saturés, retentez plus tard.
                     </p>
                     <br/>
                     <p>
@@ -124,7 +123,7 @@ const App = () => {
                     </p>
                     <br/>
                     <p>
-                        Les données et images proviennent d'<a href="https://fr.openfoodfacts.org/">Open Food Facts</a>, la base de données de produits alimentaires collaborative. Ces informations sur le poids et composition des emballages est ensuite multiplié par des facteurs d'émissions provenant de diverses sources. Le tableau ci-dessous reprend ces facteurs et sources.
+                        Les données et images proviennent d'<a href="https://fr.openfoodfacts.org/">Open Food Facts</a>, la base de données de produits alimentaires collaborative. Ces informations sur le poids et composition des emballages sont ensuite multipliées par des facteurs d'émissions provenant de diverses sources. Le tableau ci-dessous reprend ces facteurs et sources.
                     </p>
                     <br/>
                     <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
@@ -152,16 +151,16 @@ const App = () => {
                             <tr><td><span className="tag">en:metal</span></td><td>3.458</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
                             <tr><td><span className="tag">en:ps-6-polystyrene</span></td><td>2.83</td><td><a target="_blank" href="https://www.ecoconso.be/fr/content/moins-de-plastique-pour-moins-de-co2">[1]</a></td></tr>
                             <tr><td><span className="tag">en:corrugated-cardboard</span></td><td>0.558</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
-                            <tr><td><span className="tag">en:eps-expanded-polystyrene</span></td><td>2.83</td><td><a target="_blank" href="https://www.ecoconso.be/fr/content/moins-de-plastique-pour-moins-de-co2">[1]</a></td></tr>
+                            <tr><td><span className="tag">en:eps-expanded-polystyrene</span></td><td>2.83</td><td><a target="_blank" href="https://www.ecoconso.be/fr/content/moins-de-plastique-pour-moins-de-co2">[1]</a></td></tr>   
                             <tr><td><span className="tag">en:pvc-3-polyvinyl-chloride</span></td><td>1.627</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
                             <tr><td><span className="tag">en:wood</span></td><td>0.129</td><td><a target="_blank" href="https://www.emballage-leger-bois.fr/node/19">[3]</a></td></tr>
                             <tr><td><span className="tag">en:o-7-other-plastics</span></td><td>1.627</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
                             <tr><td><span className="tag">en:pa-polyamide</span></td><td>1.8</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
                             <tr><td><span className="tag">en:cellulose</span></td><td>1.627</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
-                            <tr><td><span className="tag">en:cork</span></td><td>-73.3</td><td><a target="_blank" href="https://thisiscertifiedsustainable.wine/wp-content/uploads/2022/01/Cork_CO2_85x11_APCOR.pdf">[4]</a></td></tr>
+                            <tr><td><span className="tag">en:cork</span></td><td>-73.3</td><td><a target="_blank" href="https://thisiscertifiedsustainable.wine/wp-content/uploads/2022/01/Cork_CO2_85x11_APCOR.pdf">[4]</a></td></tr>  
                             <tr><td><span className="tag">en:cellophane</span></td><td>1.627</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
                             <tr><td><span className="tag">en:clear-glass</span></td><td>0.689</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
-                            <tr><td><span className="tag">en:n2-azote</span></td><td>0</td><td>gas</td></tr>
+                            <tr><td><span className="tag">en:n2-azote</span></td><td>0</td><td>gas</td></tr>        
                             <tr><td><span className="tag">en:cotton</span></td><td>54</td><td><a target="_blank" href="https://www.franceindustrie.org/wp-franceindustrie/wp-content/uploads/2021/02/Synthese-Etude-UIT-Empreinte-carbone-280121.pdf">[5]</a></td></tr>
                             <tr><td><span className="tag">en:other-textiles</span></td><td>54</td><td><a target="_blank" href="https://www.franceindustrie.org/wp-franceindustrie/wp-content/uploads/2021/02/Synthese-Etude-UIT-Empreinte-carbone-280121.pdf">[5]</a></td></tr>
                             <tr><td><span className="tag">en:brown-glass</span></td><td>0.689</td><td><a target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQs-ppy9LXk0cMo2s2mtxHBjpI9pgTFzTcivo06uj5_uKIgkBwCBIXVYI-Ngyb1AsT9JQsz3ExO6EF-/pubhtml">[2]</a></td></tr>
@@ -170,8 +169,10 @@ const App = () => {
                         </tbody>
                         </table>
                     <p>
-                        Note importante : les calculs d'<a href="https://expertises.ademe.fr/economie-circulaire/consommer-autrement/passer-a-laction/dossier/lanalyse-cycle-vie/quest-lacv">analyses de cycles de vie</a> des matières sont très complexes. Réduire ces informations à une simple constante n'est pas considéré comme une bonne pratique. Ces données sont donc uniquement présentées à titre indicatif et ne doivent pas être réutilisées sans vérification et confirmation par un expert. 
+                        Note importante : les calculs d'<a href="https://expertises.ademe.fr/economie-circulaire/consommer-autrement/passer-a-laction/dossier/lanalyse-cycle-vie/quest-lacv">analyses de cycles de vie</a> des matières sont très complexes. Réduire ces informations à une simple constante n'est pas considéré comme une bonne pratique. Ces données sont donc uniquement présentées à titre indicatif et ne doivent pas être réutilisées sans vérification et confirmation par un expert.
                     </p>
+                    <br />
+                    <p>Le code source de ce site est disponible <a target="_blank" href="https://github.com/TTalex/packaging_carbon_game">ici</a></p>
                 </div>
             </section>
         </div>
