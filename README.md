@@ -1,4 +1,4 @@
-# Devinez quel emballage a le pire impact carbone
+# Devinez quel emballage privilégier
 
 Petit jeu pour mieux comprendre l'impact carbone des emballages.
 
